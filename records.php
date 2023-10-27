@@ -61,23 +61,23 @@
          }
       })  
 
-      // function loadTable2(page){
-      //     $.ajax({
-      //       url:"ajax-search.php",
-      //       type:"POST",
-      //       data:{input:ab,page_no:page},
-      //       success:function(response){
-      //         $('#tab').html(response);
-      //         $("#mainInput").val(ab);
-      //       }
-      //     })
-      //   }
+      function loadTable2(page){
+          $.ajax({
+            url:"ajax-search.php",
+            type:"POST",
+            data:{input:ab,page_no:page},
+            success:function(response){
+              $('#tab').html(response);
+              $("#mainInput").val(ab);
+            }
+          })
+        }
 
-      //   $(document).on("click","#mypage a",function(e){
-      //      e.preventDefault();
-      //      var page_id=$(this).attr("id");
-      //      loadTable2(page_id);
-      // });
+        $(document).on("click","#mypage a",function(e){
+           e.preventDefault();
+           var page_id=$(this).attr("id");
+           loadTable2(page_id);
+      });
         
 
       var myobj=null;
