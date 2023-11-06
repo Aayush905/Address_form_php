@@ -45,11 +45,11 @@
   <form id="addForm">
     <div class="form-group">
       <label for="usr">Name:</label><br>
-      <input type="text" class="form-control" id="ban">
+      <input type="text" class="form-control" id="ban" name="ban">
     </div>
     <div class="form-group">
       <label for="usr">Address:</label><br>
-      <input type="text" class="form-control" id="baa">
+      <input type="text" class="form-control" id="baa" name="baa">
     </div>
     <div class="form-group">
     <label >State:</label>
@@ -81,7 +81,7 @@
      </div>
     <div class="form-group">
       <label >Zipcode:</label><br>
-      <input type="number" class="form-control" id="baz">
+      <input type="number" class="form-control" id="baz" name="baz">
     </div>
     <div>
     <label class="radio-inline" style="font-family: 'Montserrat', sans-serif; font-size: 15px;font-weight: bold;">
@@ -101,11 +101,11 @@
   <form id="Forms">
     <div class="form-group">
       <label for="usr">Name:</label><br>
-      <input type="text" class="form-control" id="san">
+      <input type="text" class="form-control" id="san" name="san">
     </div>
     <div class="form-group">
       <label for="usr">Address:</label><br>
-      <input type="text" class="form-control" id="saa">
+      <input type="text" class="form-control" id="saa" name="saa">
     </div>
     <div class="form-group">
     <label >State:</label>      
@@ -132,7 +132,7 @@
      </div>
     <div class="form-group">
       <label >Zipcode:</label><br>
-      <input type="number" class="form-control" id="saz">
+      <input type="number" class="form-control" id="saz" name="saz">
     </div>
     <div>
     <label class="radio-inline" style="font-family: 'Montserrat', sans-serif; font-size: 15px;font-weight: bold;">
@@ -152,13 +152,16 @@
   src="https://code.jquery.com/jquery-3.7.1.min.js"
   integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
   crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js" integrity="sha512-WMEKGZ7L5LWgaPeJtw9MBM4i5w5OSBlSjTjCtSnvFJGSVD26gE5+Td12qN5pvWXhuWaWcVwF++F7aqu9cvqP0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
     var a=null;
-    var c=null;
+    var c=null; 
     $(document).ready(function(){
-
      $('#myrecords').click(function(){
-      window.location.href = 'records.php';
+      var field="any";
+      var order="default";
+      window.location.href = "records.php?order_by="+field+"&direction="+order;
+      // window.location.href = "records.php?direction="+order;
      }) 
 
      $('#mybutton').click(function(){
@@ -179,8 +182,10 @@
          var bt=$('input[name="optradio"]:checked').val();
          var st=$('input[name="optradio2"]:checked').val();
 
-         if(bn=="" || ba=="" || bz=="" || sn=="" || sa=="" || sz==""){
-          $('#error-message').html("All Fields are Required").slideDown();
+         if(bn=="" || ba=="" || bz=="" || sn=="" || sa=="" || sz=="" || ba.length<10 || sa.length<10 || sz.length<6 || bz.length<6){
+          // $('#error-message').html("All Fields are Required").slideDown();
+          $('#addForm').valid();
+          $('#Forms').valid();
           $('#success-message').slideUp();
          }else{
           $.ajax({
@@ -218,7 +223,49 @@
           }
          })
          }
-         
+     });
+
+
+     $("#addForm").validate({
+         rules:{
+             ban:"required", 
+             baa:{
+              required:true,
+              minlength:10,
+             },    
+             baz:{
+              required:true,
+              minlength:6,
+             },    
+        },
+         messages:{
+            ban:"Please Enter Your Name",
+            baa:{
+              required:"Please Enter Your Billing Address",
+              minlength:"Address must be at least 10 characters",
+             },
+         }
+     });
+
+     $("#Forms").validate({
+         rules:{
+             san:"required", 
+             saa:{
+              required:true,
+              minlength:10,
+             },  
+             saz:{
+              required:true,
+              minlength:6,
+             },   
+        },
+         messages:{
+            san:"Please Enter Your Name",
+            saa:{
+              required:"Please Enter Your Shipping Address",
+              minlength:"Address must be at least 10 characters",
+             },
+         }
      });
 
 

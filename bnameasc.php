@@ -6,9 +6,7 @@ $db="prac";
 $conn = new mysqli($servername, $username, $password,$db);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
-  }
-
-
+}
 $limit_per_page=10;
 $page="";
 if(isset($_POST["page_no"])){
@@ -16,18 +14,17 @@ if(isset($_POST["page_no"])){
 }else{
   $page=1;
 }
-$temp="";
+$caller=$_POST["caller"];
 $offset=($page-1)*$limit_per_page;
-  $input=$_POST['input'];
-  $sql="";
-  if(is_numeric($input)){
-    $sql = "SELECT * FROM info where Sstate Like '%{$input}%' OR Sname Like '%{$input}%' OR Scity Like '%{$input}%' OR Bstate Like '%{$input}%' OR Bname Like '%{$input}%' OR Bcity Like '%{$input}%' OR Baddress Like '%{$input}%' OR Saddress Like '%{$input}%' OR Bzipcode=CAST({$input} AS SIGNED) OR Szipcode=CAST({$input} AS SIGNED) OR Saddresstype Like '%{$input}%' OR Baddresstype Like '%{$input}%' LIMIT {$offset},{$limit_per_page}";
-  }else{
-  $sql = "SELECT * FROM info where Sstate Like '%{$input}%' OR Sname Like '%{$input}%' OR Scity Like '%{$input}%' OR Bstate Like '%{$input}%' OR Bname Like '%{$input}%' OR Bcity Like '%{$input}%' OR Baddress Like '%{$input}%' OR Saddress Like '%{$input}%'OR Saddresstype Like '%{$input}%' OR Baddresstype Like '%{$input}%' LIMIT {$offset},{$limit_per_page}";  
-  }
+ if($caller=="ebnA"){
+    $sql = "SELECT * FROM info ORDER BY Bname LIMIT {$offset},{$limit_per_page}";
+ }else if($caller=="ebnB"){
+    $sql = "SELECT * FROM info ORDER BY Bname DESC LIMIT {$offset},{$limit_per_page}";
+ }
+   
   $result = $conn->query($sql);
   if(mysqli_num_rows($result)>0){
-    $output='<div id="mainDiv" >
+    $output='<div id="mainDiv">
     <div class="input-group">
       <input type="text" class="form-control" id="mainInput" placeholder="Search">
       <div class="input-group-btn">
@@ -41,16 +38,16 @@ $offset=($page-1)*$limit_per_page;
     $output.='<thead>
     <tr>
       <th>#</th>
-      <th id="sbn">Bname</th>
+      <th id="ebn">Bname</th>
       <th>Baddress</th>
-      <th id="sbs">Bstate</th>
-      <th id="sbc">Bcity</th>
+      <th id="ebs">Bstate</th>
+      <th id="ebc">Bcity</th>
       <th>Bzipcode</th>
       <th>Baddresstype</th>
-      <th id="ssn">Sname</th>
+      <th id="esn">Sname</th>
       <th>Saddress</th>
-      <th id="sss">Sstate</th>
-      <th id="ssc">Scity</th>
+      <th id="ess">Sstate</th>
+      <th id="esc">Scity</th>
       <th>Szipcode</th>
       <th>Saddresstype</th>
       <th>Edit</th>
@@ -74,52 +71,53 @@ $offset=($page-1)*$limit_per_page;
       <td>{$c['Szipcode']}</td>
       <td>{$c['Saddresstype']}</td>
       <td><button type='button' class='btn btn-primary edit' data-id={$c['id']}>Edit</button></td>
-      <td><button type='button' class='btn btn-danger delete2' data-id={$c['id']}>Delete</button></td>
+      <td><button type='button' class='btn btn-danger delete' data-id={$c['id']}>Delete</button></td>
     </tr>";
     }
     $output.="</tbody>
     </table>
     </div></div>";
-    if(is_numeric($input)){
-      $temp = "SELECT * FROM info where Sstate Like '%{$input}%' OR Sname Like '%{$input}%' OR Scity Like '%{$input}%' OR Bstate Like '%{$input}%' OR Bname Like '%{$input}%' OR Bcity Like '%{$input}%' OR Baddress Like '%{$input}%' OR Saddress Like '%{$input}%' OR Bzipcode=CAST({$input} AS SIGNED) OR Szipcode=CAST({$input} AS SIGNED) OR Saddresstype Like '%{$input}%' OR Baddresstype Like '%{$input}%'";
-    }else{
-    $temp = "SELECT * FROM info where Sstate Like '%{$input}%' OR Sname Like '%{$input}%' OR Scity Like '%{$input}%' OR Bstate Like '%{$input}%' OR Bname Like '%{$input}%' OR Bcity Like '%{$input}%' OR Baddress Like '%{$input}%' OR Saddress Like '%{$input}%'OR Saddresstype Like '%{$input}%' OR Baddresstype Like '%{$input}%'";  
+    if($caller=="ebnA"){
+        $temp="SELECT * FROM info ORDER BY Bname";
+    }else if($caller=="ebnB"){
+        $temp="SELECT * FROM info ORDER BY Bname DESC";
     }
     $result2 = $conn->query($temp);
     $total_record=mysqli_num_rows($result2);
     $total_pages=ceil($total_record/$limit_per_page);
-    $output.='<div class="text-center"><ul class="pagination" id="mypage">';
+    $output.="<div class='text-center'><ul class='pagination' id={$caller}>";
     if($total_pages==1){
-    
+      $output.="<li><a id='1' href='#'> 1 </a></li>"; 
     }else{
-      if($page==2){
-        $tpage=$page-1;
-        $output.="<li><a id='{$tpage}' href='#'> < </a></li>"; 
-      }
-      if($page>2){ 
-        $output.="<li><a id='1' href='#'> << </a></li>"; 
-        $tpage=$page-1;
-        $output.="<li><a id='{$tpage}' href='#'> < </a></li>"; 
-      } 
-    if($total_pages>4){
-      $start=1;
-      $end=4;
-      $start=$page-1;
-      if($start==0){
-        $start=1;
-        $end=$start+3;
-      }else{
-        $start=$page-1;
-        $end=$start+3;
-        if($end>$total_pages){
-          $end=$total_pages;
-          $start=$end-3;
-        }
-      }
-    }else{
-      $start=1;
-      $end=$total_pages;
+
+    if($page==2){
+      $tpage=$page-1;
+      $output.="<li><a id='{$tpage}' href='#'> < </a></li>"; 
     }
+    if($page>2){ 
+      $output.="<li><a id='1' href='#'> << </a></li>"; 
+      $tpage=$page-1;
+      $output.="<li><a id='{$tpage}' href='#'> < </a></li>"; 
+    } 
+    if($total_pages>4){
+        $start=1;
+        $end=4;
+        $start=$page-1;
+        if($start==0){
+          $start=1;
+          $end=$start+3;
+        }else{
+          $start=$page-1;
+          $end=$start+3;
+          if($end>$total_pages){
+            $end=$total_pages;
+            $start=$end-3;
+          }
+        }
+      }else{
+        $start=1;
+        $end=$total_pages;
+      }
    
     for ($i=$start; $i<=$end; $i++) { 
       $output.= "<li><a class='active' href='#' id='{$i}'>{$i}</a></li>";
@@ -129,8 +127,8 @@ $offset=($page-1)*$limit_per_page;
     $f=$page+1;
     $output.="<li><a href='#' id='{$f}'> > </a></li>"; 
     $output.="<li><a href='#' id={$total_pages}> >> </a></li>"; 
-   }    
-  }
+   } 
+  }   
     $output.="</ul></div>";
     echo $output;
   }else if($page>=2){
@@ -146,5 +144,4 @@ $offset=($page-1)*$limit_per_page;
   </div>';
     echo $output;
   }
-  
 ?>                          

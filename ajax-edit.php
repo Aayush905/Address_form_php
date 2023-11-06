@@ -51,11 +51,11 @@
   <form id="addForm">
     <div class="form-group">
       <label for="usr">Name:</label><br>
-      <input type="text" class="form-control" value="<?php echo $_GET["key9"]; ?>" id="ban">
+      <input type="text" class="form-control" value="<?php echo $_GET["key9"]; ?>" id="ban" name="ban">
     </div>
     <div class="form-group">
       <label for="usr">Address:</label><br>
-      <input type="text" class="form-control" value="<?php echo $_GET["key12"]; ?>" id="baa">
+      <input type="text" class="form-control" value="<?php echo $_GET["key12"]; ?>" id="baa" name="baa">
     </div>
     <div class="form-group">
     <label >State:</label>
@@ -87,7 +87,7 @@
      </div>
     <div class="form-group">
       <label >Zipcode:</label><br>
-      <input type="number" class="form-control" value="<?php echo $_GET["key7"]; ?>" id="baz">
+      <input type="number" class="form-control" value="<?php echo $_GET["key7"]; ?>" id="baz" name="baz">
     </div>
     <div>
     <label class="radio-inline" style="font-family: 'Montserrat', sans-serif; font-size: 15px;font-weight: bold;">
@@ -107,11 +107,11 @@
   <form id="Forms">
     <div class="form-group">
       <label for="usr">Name:</label><br>
-      <input type="text" class="form-control" value="<?php echo $_GET["key4"]; ?>" id="san">
+      <input type="text" class="form-control" value="<?php echo $_GET["key4"]; ?>" id="san" name="san">
     </div>
     <div class="form-group">
       <label for="usr">Address:</label><br>
-      <input type="text" class="form-control" value="<?php echo $_GET["key13"]; ?>" id="saa">
+      <input type="text" class="form-control" value="<?php echo $_GET["key13"]; ?>" id="saa" name="saa">
     </div>
     <div class="form-group">
     <label >State:</label>      
@@ -138,7 +138,7 @@
      </div>
     <div class="form-group">
       <label >Zipcode:</label><br>
-      <input type="number" class="form-control" value="<?php echo $_GET["key2"]; ?>" id="saz">
+      <input type="number" class="form-control" value="<?php echo $_GET["key2"]; ?>" id="saz" name="saz">
     </div>
     <div>
     <label class="radio-inline" style="font-family: 'Montserrat', sans-serif; font-size: 15px;font-weight: bold;">
@@ -149,6 +149,7 @@
     </label>
     <br>
     <br>
+    <button type="button" class="btn btn-warning" id="backBtn">Back</button>
     <button type="button" class="btn btn-primary" id="mybutton">Update</button>
     </div>
   </form>
@@ -157,6 +158,7 @@
   src="https://code.jquery.com/jquery-3.7.1.min.js"
   integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
   crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js" integrity="sha512-WMEKGZ7L5LWgaPeJtw9MBM4i5w5OSBlSjTjCtSnvFJGSVD26gE5+Td12qN5pvWXhuWaWcVwF++F7aqu9cvqP0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
     var a=null;
     var c=null;
@@ -181,8 +183,14 @@
          var bt=$('input[name="optradio"]:checked').val();
          var st=$('input[name="optradio2"]:checked').val();
   
-         if(bn=="" || ba=="" || bz=="" || sn=="" || sa=="" || sz==""){
-          $('#error-message').html("All Fields are Required").slideDown();
+        //  if(bn=="" || ba=="" || bz=="" || sn=="" || sa=="" || sz==""){
+        //   $('#error-message').html("All Fields are Required").slideDown();
+        //   $('#success-message').slideUp();
+        //  }
+         if(bn=="" || ba=="" || bz=="" || sn=="" || sa=="" || sz=="" || ba.length<10 || sa.length<10 || sz.length<6 || bz.length<6){
+          // $('#error-message').html("All Fields are Required").slideDown();
+          $('#addForm').valid();
+          $('#Forms').valid();
           $('#success-message').slideUp();
          }else{
           $.ajax({
@@ -191,8 +199,11 @@
           data:{bnd:bn,bad:ba,bzd:bz,snd:sn,sad:sa,szd:sz,bsd:bs,ssd:ss,bcd:bc,scd:sc,btd:bt,std:st,bid:bi},
           success:function(response){
             if(response==1){
-              $('#success-message').html("Data is updated successfully").slideDown();
-              $('#error-message').slideUp();
+              var field="any";
+              var order="default";
+              window.location.href = "records.php?order_by="+field+"&direction="+order;
+              // $('#success-message').html("Data is updated successfully").slideDown();
+              // $('#error-message').slideUp();
             //   c=$('#sas').val();
             //   $.ajax({
             //    url: "ajax-shipping.php",
@@ -220,6 +231,50 @@
          }
          
      });
+
+
+     $("#addForm").validate({
+         rules:{
+             ban:"required", 
+             baa:{
+              required:true,
+              minlength:10,
+             },    
+             baz:{
+              required:true,
+              minlength:6,
+             },    
+        },
+         messages:{
+            ban:"Please Enter Your Name",
+            baa:{
+              required:"Please Enter Your Billing Address",
+              minlength:"Address must be at least 10 characters",
+             },
+         }
+     });
+
+     $("#Forms").validate({
+         rules:{
+             san:"required", 
+             saa:{
+              required:true,
+              minlength:10,
+             },  
+             saz:{
+              required:true,
+              minlength:6,
+             },   
+        },
+         messages:{
+            san:"Please Enter Your Name",
+            saa:{
+              required:"Please Enter Your Shipping Address",
+              minlength:"Address must be at least 10 characters",
+             },
+         }
+     });
+
       
      a=$('#state').val();
      b=$('#bac').data("tp");
@@ -275,6 +330,16 @@
             }
          })
       });
+
+      $('#backBtn').click(function(){
+      var field="any";
+      var order="default";
+      window.location.href = "records.php?order_by="+field+"&direction="+order;
+      // window.location.href = 'records.php';
+     }) 
+
+
+     
 
 
       $('#sas').click(function(){

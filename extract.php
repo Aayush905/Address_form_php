@@ -34,19 +34,20 @@ $offset=($page-1)*$limit_per_page;
     $output.='<thead>
     <tr>
       <th>#</th>
-      <th>Bname</th>
+      <th id="ebn">Bname</th>
       <th>Baddress</th>
-      <th>Bstate</th>
-      <th>Bcity</th>
+      <th id="ebs">Bstate</th>
+      <th id="ebc">Bcity</th>
       <th>Bzipcode</th>
       <th>Baddresstype</th>
-      <th>Sname</th>
-      <th>Saddress</th>
-      <th>Sstate</th>
-      <th>Scity</th>
+      <th id="esn">Sname</th>
+      <th >Saddress</th>
+      <th id="ess">Sstate</th>
+      <th id="esc">Scity</th>
       <th>Szipcode</th>
       <th>Saddresstype</th>
       <th>Edit</th>
+      <th>Delete</th>
     </tr>
   </thead>
   <tbody>'; 
@@ -66,6 +67,7 @@ $offset=($page-1)*$limit_per_page;
       <td>{$c['Szipcode']}</td>
       <td>{$c['Saddresstype']}</td>
       <td><button type='button' class='btn btn-primary edit' data-id={$c['id']}>Edit</button></td>
+      <td><button type='button' class='btn btn-danger delete' data-id={$c['id']}>Delete</button></td>
     </tr>";
     }
     $output.="</tbody>
@@ -76,12 +78,62 @@ $offset=($page-1)*$limit_per_page;
     $total_record=mysqli_num_rows($result2);
     $total_pages=ceil($total_record/$limit_per_page);
     $output.='<div class="text-center"><ul class="pagination" id="pages">';
-    for($i=1;$i<=$total_pages;$i++){
-      $output.="<li><a class='active' id='{$i}' href='#'>{$i}</a></li>";
+    if($total_pages==1){
+      
+    }else{
+
+    if($page==2){
+      $tpage=$page-1;
+      $output.="<li><a id='{$tpage}' href='#'> < </a></li>"; 
     }
+    if($page>2){ 
+      $output.="<li><a id='1' href='#'> << </a></li>"; 
+      $tpage=$page-1;
+      $output.="<li><a id='{$tpage}' href='#'> < </a></li>"; 
+    } 
+    if($total_pages>4){
+    $start=1;
+    $end=4;
+    $start=$page-1;
+    if($start==0){
+      $start=1;
+      $end=$start+3;
+    }else{
+      $start=$page-1;
+      $end=$start+3;
+      if($end>$total_pages){
+        $end=$total_pages;
+        $start=$end-3;
+      }
+    }
+  }else{
+    $start=1;
+    $end=$total_pages;
+  }
+   
+    for ($i=$start; $i<=$end; $i++) { 
+      $output.= "<li><a class='active' href='#' id='{$i}'>{$i}</a></li>";
+    }
+    // Show next and last-page links. 
+   if($page<$total_pages){ 
+    $f=$page+1;
+    $output.="<li><a href='#' id='{$f}'> > </a></li>"; 
+    $output.="<li><a href='#' id={$total_pages}> >> </a></li>"; 
+   } 
+  }   
     $output.="</ul></div>";
     echo $output;
+  }else if($page>=2){
+     echo $page-1;
   }else{
-    echo "<h2>No Record Found.</h2>";
+    $output='<div class="input-group" >
+    <input type="text" class="form-control" id="mainInput" placeholder="Search">
+    <div class="input-group-btn">
+      <button class="btn btn-default" id="mainButton">
+        <i class="glyphicon glyphicon-search"></i>
+      </button>
+    </div>
+  </div>';
+    echo $output;
   }
 ?>                          

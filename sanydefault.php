@@ -17,13 +17,30 @@ if(isset($_POST["page_no"])){
   $page=1;
 }
 $temp="";
+$tid=null;
+$order_by=$_POST["order_by"];
+$caller=$_POST["caller"];
 $offset=($page-1)*$limit_per_page;
-  $input=$_POST['input'];
-  $sql="";
+$input=$_POST['input'];
+$sql="";
   if(is_numeric($input)){
-    $sql = "SELECT * FROM info where Sstate Like '%{$input}%' OR Sname Like '%{$input}%' OR Scity Like '%{$input}%' OR Bstate Like '%{$input}%' OR Bname Like '%{$input}%' OR Bcity Like '%{$input}%' OR Baddress Like '%{$input}%' OR Saddress Like '%{$input}%' OR Bzipcode=CAST({$input} AS SIGNED) OR Szipcode=CAST({$input} AS SIGNED) OR Saddresstype Like '%{$input}%' OR Baddresstype Like '%{$input}%' LIMIT {$offset},{$limit_per_page}";
+    if($caller==1){
+        $sql = "SELECT * FROM info where Sstate Like '%{$input}%' OR Sname Like '%{$input}%' OR Scity Like '%{$input}%' OR Bstate Like '%{$input}%' OR Bname Like '%{$input}%' OR Bcity Like '%{$input}%' OR Baddress Like '%{$input}%' OR Saddress Like '%{$input}%' OR Bzipcode=CAST({$input} AS SIGNED) OR Szipcode=CAST({$input} AS SIGNED) OR Saddresstype Like '%{$input}%' OR Baddresstype Like '%{$input}%' ORDER BY {$order_by} LIMIT {$offset},{$limit_per_page}";  
+        $tid="u";    
+    }else{
+        $sql = "SELECT * FROM info where Sstate Like '%{$input}%' OR Sname Like '%{$input}%' OR Scity Like '%{$input}%' OR Bstate Like '%{$input}%' OR Bname Like '%{$input}%' OR Bcity Like '%{$input}%' OR Baddress Like '%{$input}%' OR Saddress Like '%{$input}%' OR Bzipcode=CAST({$input} AS SIGNED) OR Szipcode=CAST({$input} AS SIGNED) OR Saddresstype Like '%{$input}%' OR Baddresstype Like '%{$input}%' ORDER BY {$order_by} DESC LIMIT {$offset},{$limit_per_page}";
+        $tid="l";
+    }
+    
   }else{
-  $sql = "SELECT * FROM info where Sstate Like '%{$input}%' OR Sname Like '%{$input}%' OR Scity Like '%{$input}%' OR Bstate Like '%{$input}%' OR Bname Like '%{$input}%' OR Bcity Like '%{$input}%' OR Baddress Like '%{$input}%' OR Saddress Like '%{$input}%'OR Saddresstype Like '%{$input}%' OR Baddresstype Like '%{$input}%' LIMIT {$offset},{$limit_per_page}";  
+    if($caller==1){
+      $sql = "SELECT * FROM info where Sstate Like '%{$input}%' OR Sname Like '%{$input}%' OR Scity Like '%{$input}%' OR Bstate Like '%{$input}%' OR Bname Like '%{$input}%' OR Bcity Like '%{$input}%' OR Baddress Like '%{$input}%' OR Saddress Like '%{$input}%'OR Saddresstype Like '%{$input}%' OR Baddresstype Like '%{$input}%' ORDER BY {$order_by} LIMIT {$offset},{$limit_per_page}"; 
+      $tid="u";
+    }else{
+      $sql = "SELECT * FROM info where Sstate Like '%{$input}%' OR Sname Like '%{$input}%' OR Scity Like '%{$input}%' OR Bstate Like '%{$input}%' OR Bname Like '%{$input}%' OR Bcity Like '%{$input}%' OR Baddress Like '%{$input}%' OR Saddress Like '%{$input}%'OR Saddresstype Like '%{$input}%' OR Baddresstype Like '%{$input}%' ORDER BY {$order_by} DESC LIMIT {$offset},{$limit_per_page}"; 
+      $tid="l";   
+    }
+    
   }
   $result = $conn->query($sql);
   if(mysqli_num_rows($result)>0){
@@ -81,14 +98,14 @@ $offset=($page-1)*$limit_per_page;
     </table>
     </div></div>";
     if(is_numeric($input)){
-      $temp = "SELECT * FROM info where Sstate Like '%{$input}%' OR Sname Like '%{$input}%' OR Scity Like '%{$input}%' OR Bstate Like '%{$input}%' OR Bname Like '%{$input}%' OR Bcity Like '%{$input}%' OR Baddress Like '%{$input}%' OR Saddress Like '%{$input}%' OR Bzipcode=CAST({$input} AS SIGNED) OR Szipcode=CAST({$input} AS SIGNED) OR Saddresstype Like '%{$input}%' OR Baddresstype Like '%{$input}%'";
+      $temp = "SELECT * FROM info where Sstate Like '%{$input}%' OR Sname Like '%{$input}%' OR Scity Like '%{$input}%' OR Bstate Like '%{$input}%' OR Bname Like '%{$input}%' OR Bcity Like '%{$input}%' OR Baddress Like '%{$input}%' OR Saddress Like '%{$input}%' OR Bzipcode=CAST({$input} AS SIGNED) OR Szipcode=CAST({$input} AS SIGNED) OR Saddresstype Like '%{$input}%' OR Baddresstype Like '%{$input}%' ORDER BY {$order_by}";
     }else{
-    $temp = "SELECT * FROM info where Sstate Like '%{$input}%' OR Sname Like '%{$input}%' OR Scity Like '%{$input}%' OR Bstate Like '%{$input}%' OR Bname Like '%{$input}%' OR Bcity Like '%{$input}%' OR Baddress Like '%{$input}%' OR Saddress Like '%{$input}%'OR Saddresstype Like '%{$input}%' OR Baddresstype Like '%{$input}%'";  
+    $temp = "SELECT * FROM info where Sstate Like '%{$input}%' OR Sname Like '%{$input}%' OR Scity Like '%{$input}%' OR Bstate Like '%{$input}%' OR Bname Like '%{$input}%' OR Bcity Like '%{$input}%' OR Baddress Like '%{$input}%' OR Saddress Like '%{$input}%'OR Saddresstype Like '%{$input}%' OR Baddresstype Like '%{$input}%' ORDER BY {$order_by} DESC";  
     }
     $result2 = $conn->query($temp);
     $total_record=mysqli_num_rows($result2);
     $total_pages=ceil($total_record/$limit_per_page);
-    $output.='<div class="text-center"><ul class="pagination" id="mypage">';
+    $output.="<div class='text-center'><ul class='pagination' id={$tid}>";
     if($total_pages==1){
     
     }else{
